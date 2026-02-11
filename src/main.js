@@ -79,7 +79,7 @@ noBtn.addEventListener('click', (e) => {
   noBtn.style.left = `${newX}px`
   noBtn.style.top = `${newY}px`
   noBtn.style.margin = '0'
-  noBtn.style.zIndex = '1' // Keep it below the container
+  noBtn.style.zIndex = '5000' // Always above the modal
 
   // Exponential growth for YES button
   currentScale = currentScale * 1.6 + 0.2
@@ -87,7 +87,7 @@ noBtn.addEventListener('click', (e) => {
 
   if (currentScale > 1.1) {
     document.querySelector('.container').style.zIndex = '1000'
-    yesBtn.style.zIndex = '1000'
+    yesBtn.style.zIndex = '6000' // Stays on top of No button
   }
 })
 
@@ -117,10 +117,6 @@ yesBtn.addEventListener('click', async () => {
 submitBtn.addEventListener('click', async () => {
   const message = messageInput.value.trim()
   if (!message) return
-  if (hasSubmittedMessage) {
-    feedback.innerText = "You've already sent a message ❤️"
-    return
-  }
 
   submitBtn.disabled = true
   submitBtn.innerText = 'Sending...'
@@ -133,9 +129,12 @@ submitBtn.addEventListener('click', async () => {
 
     if (error) throw error
 
-    hasSubmittedMessage = true
     feedback.innerText = "Message sent! ✨"
     submitBtn.innerText = 'Sent!'
+    setTimeout(() => {
+      submitBtn.disabled = false
+      submitBtn.innerText = 'Update Message'
+    }, 2000)
   } catch (err) {
     console.error(err)
     feedback.innerText = "Couldn't send message. Try again?"
@@ -177,12 +176,9 @@ async function checkExistingMessage() {
       .single()
 
     if (data && data.message) {
-      hasSubmittedMessage = true
       messageInput.value = data.message
-      messageInput.disabled = true
-      submitBtn.disabled = true
-      submitBtn.innerText = 'Sent!'
-      feedback.innerText = "You've already sent a message ❤️"
+      submitBtn.innerText = 'Update Message'
+      feedback.innerText = "You can update your previous message ❤️"
     }
   } catch (err) {
     // Single might fail if user doesn't exist yet, which is fine
