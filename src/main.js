@@ -79,13 +79,14 @@ noBtn.addEventListener('click', (e) => {
   noBtn.style.left = `${newX}px`
   noBtn.style.top = `${newY}px`
   noBtn.style.margin = '0'
-  noBtn.style.zIndex = '10'
+  noBtn.style.zIndex = '1' // Keep it below the container
 
   // Exponential growth for YES button
   currentScale = currentScale * 1.6 + 0.2
   yesBtn.style.transform = `scale(${currentScale})`
 
   if (currentScale > 1.1) {
+    document.querySelector('.container').style.zIndex = '1000'
     yesBtn.style.zIndex = '1000'
   }
 })
@@ -106,6 +107,7 @@ yesBtn.addEventListener('click', async () => {
   // Transition UI
   mainSection.style.display = 'none'
   outcomeSection.style.display = 'block'
+  noBtn.style.display = 'none' // Hide the No button for good
 
   // Check if already submitted
   checkExistingMessage()
