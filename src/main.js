@@ -69,7 +69,14 @@ noBtn.addEventListener('click', (e) => {
 
   // Escape the container
   if (noBtn.parentElement !== document.body) {
+    const rect = noBtn.getBoundingClientRect()
+    noBtn.style.position = 'fixed'
+    noBtn.style.left = `${rect.left}px`
+    noBtn.style.top = `${rect.top}px`
+    noBtn.style.margin = '0'
     document.body.appendChild(noBtn)
+    // Force a reflow to ensure the initial position is registered
+    noBtn.offsetHeight
   }
 
   // Fixed movement pattern
