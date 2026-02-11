@@ -79,13 +79,13 @@ noBtn.addEventListener('click', (e) => {
   noBtn.style.left = `${newX}px`
   noBtn.style.top = `${newY}px`
   noBtn.style.margin = '0'
-  noBtn.style.zIndex = '9999'
+  noBtn.style.zIndex = '10'
 
   // Exponential growth for YES button
   currentScale = currentScale * 1.6 + 0.2
   yesBtn.style.transform = `scale(${currentScale})`
 
-  if (currentScale > 2) {
+  if (currentScale > 1.1) {
     yesBtn.style.zIndex = '1000'
   }
 })
