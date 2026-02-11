@@ -56,15 +56,22 @@ noBtn.addEventListener('click', (e) => {
   noClicks++
   updateClicks(0, 1)
 
-  // Move button
-  const rect = noBtn.getBoundingClientRect()
-  const moveDistance = 150
+  // Escape the container to prevent positioning bugs
+  if (noBtn.parentElement !== document.body) {
+    document.body.appendChild(noBtn)
+  }
 
-  let newX = rect.left + (Math.random() - 0.5) * moveDistance * 2
-  let newY = rect.top + (Math.random() - 0.5) * moveDistance * 2
+  // Calculate new position
+  const moveDist = 150
+  const angle = Math.random() * 2 * Math.PI
+
+  // Get current position
+  const rect = noBtn.getBoundingClientRect()
+  let newX = rect.left + Math.cos(angle) * moveDist
+  let newY = rect.top + Math.sin(angle) * moveDist
 
   // Clamp to viewport
-  const padding = 20
+  const padding = 40
   newX = Math.max(padding, Math.min(newX, window.innerWidth - rect.width - padding))
   newY = Math.max(padding, Math.min(newY, window.innerHeight - rect.height - padding))
 
@@ -72,13 +79,13 @@ noBtn.addEventListener('click', (e) => {
   noBtn.style.left = `${newX}px`
   noBtn.style.top = `${newY}px`
   noBtn.style.margin = '0'
+  noBtn.style.zIndex = '9999'
 
-  // Growth for YES button
-  currentScale += 0.4
+  // Exponential growth for YES button
+  currentScale = currentScale * 1.6 + 0.2
   yesBtn.style.transform = `scale(${currentScale})`
 
-  // If yes button is huge, bring it to front/center more
-  if (currentScale > 10) {
+  if (currentScale > 2) {
     yesBtn.style.zIndex = '1000'
   }
 })
@@ -139,21 +146,23 @@ submitBtn.addEventListener('click', async () => {
 
 async function updateClicks(yesInc = 0, noInc = 0) {
   try {
-    // Update user stats
+    console.log('Syncing clicks...', { userId, yesClicks, noClicks, yesInc, noInc });
+
     const { error: upsertError } = await supabase
       .from('interactions')
       .upsert(
         { user_id: userId, yes_clicks: yesClicks, no_clicks: noClicks },
         { onConflict: 'user_id' }
-      )
+      );
 
-    if (upsertError) throw upsertError
+    if (upsertError) throw upsertError;
 
-    // Atomically increment global stats
-    await supabase.rpc('increment_global_stats', { yes_inc: yesInc, no_inc: noInc })
+    const { error: rpcError } = await supabase.rpc('increment_global_stats', { yes_inc: yesInc, no_inc: noInc });
+    if (rpcError) throw rpcError;
 
+    console.log('✅ Sync successful');
   } catch (err) {
-    console.error('Data error:', err)
+    console.error('❌ Data error:', err);
   }
 }
 
