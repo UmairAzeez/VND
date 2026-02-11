@@ -44,7 +44,7 @@ function createFloatingElement() {
   })
 }
 
-setInterval(createFloatingElement, 1500)
+setInterval(createFloatingElement, 700)
 for (let i = 0; i < 10; i++) {
   setTimeout(createFloatingElement, Math.random() * 5000)
 }
@@ -67,29 +67,34 @@ noBtn.addEventListener('click', (e) => {
   noClicks++
   updateClicks(0, 1)
 
-  // Escape the container
+  // Escape the container if first click
   if (noBtn.parentElement !== document.body) {
     const rect = noBtn.getBoundingClientRect()
     noBtn.style.position = 'fixed'
     noBtn.style.left = `${rect.left}px`
     noBtn.style.top = `${rect.top}px`
     noBtn.style.margin = '0'
+    noBtn.style.zIndex = '10'
     document.body.appendChild(noBtn)
-    // Force a reflow to ensure the initial position is registered
-    noBtn.offsetHeight
+
+    // Use requestAnimationFrame to ensure the move to fixed is processed 
+    // before we apply the NEW coordinates, allowing the transition to kick in.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        applyNewPosition()
+      })
+    })
+  } else {
+    applyNewPosition()
   }
 
-  // Fixed movement pattern
-  const pos = fixedPositions[(noClicks - 1) % fixedPositions.length]
-
-  noBtn.style.position = 'fixed'
-  noBtn.style.left = pos.left
-  noBtn.style.top = pos.top
-  noBtn.style.margin = '0'
-  noBtn.style.zIndex = '10'
+  function applyNewPosition() {
+    const pos = fixedPositions[(noClicks - 1) % fixedPositions.length]
+    noBtn.style.left = pos.left
+    noBtn.style.top = pos.top
+  }
 
   // Exponential growth for YES button
-  // Grows to cover the screen in about 6 clicks
   currentScale = currentScale * 1.8
   yesBtn.style.transform = `scale(${currentScale})`
 
