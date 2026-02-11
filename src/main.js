@@ -52,42 +52,43 @@ for (let i = 0; i < 10; i++) {
 // --- Interaction Logic ---
 
 // NO Button: Moves away on click
+const fixedPositions = [
+  { left: '10vw', top: '10vh' },
+  { left: '70vw', top: '15vh' },
+  { left: '75vw', top: '75vh' },
+  { left: '15vw', top: '80vh' },
+  { left: '45vw', top: '5vh' },
+  { left: '45vw', top: '85vh' }
+]
+
 noBtn.addEventListener('click', (e) => {
+  if (noClicks >= 6) return // Stop moving after 6 clicks as Yes will cover it
+
   noClicks++
   updateClicks(0, 1)
 
-  // Escape the container to prevent positioning bugs
+  // Escape the container
   if (noBtn.parentElement !== document.body) {
     document.body.appendChild(noBtn)
   }
 
-  // Calculate new position
-  const moveDist = 150
-  const angle = Math.random() * 2 * Math.PI
-
-  // Get current position
-  const rect = noBtn.getBoundingClientRect()
-  let newX = rect.left + Math.cos(angle) * moveDist
-  let newY = rect.top + Math.sin(angle) * moveDist
-
-  // Clamp to viewport
-  const padding = 40
-  newX = Math.max(padding, Math.min(newX, window.innerWidth - rect.width - padding))
-  newY = Math.max(padding, Math.min(newY, window.innerHeight - rect.height - padding))
+  // Fixed movement pattern
+  const pos = fixedPositions[(noClicks - 1) % fixedPositions.length]
 
   noBtn.style.position = 'fixed'
-  noBtn.style.left = `${newX}px`
-  noBtn.style.top = `${newY}px`
+  noBtn.style.left = pos.left
+  noBtn.style.top = pos.top
   noBtn.style.margin = '0'
-  noBtn.style.zIndex = '10' // Behind the growing yes button
+  noBtn.style.zIndex = '10'
 
   // Exponential growth for YES button
-  currentScale = currentScale * 1.6 + 0.2
+  // Grows to cover the screen in about 6 clicks
+  currentScale = currentScale * 1.8
   yesBtn.style.transform = `scale(${currentScale})`
 
   if (currentScale > 1.1) {
     document.querySelector('.container').style.zIndex = '1000'
-    yesBtn.style.zIndex = '1000' // High enough to cover No button
+    yesBtn.style.zIndex = '1000'
   }
 })
 
