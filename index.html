@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine?</title>
+    <meta name="description" content="A special Valentine interaction just for you.">
+</head>
+<body>
+    <div id="bg-animation"></div>
+    
+    <main class="container">
+        <div id="main-section">
+            <h1 id="question">Will you be my Valentine?</h1>
+            <div class="button-group">
+                <button id="yes-btn">Yes</button>
+                <button id="no-btn">No</button>
+            </div>
+        </div>
+
+        <div id="outcome-section">
+            <h2 class="success-text">I knew it.</h2>
+            <div class="message-box">
+                <textarea id="val-message" rows="4" placeholder="Leave a sweet message..."></textarea>
+                <button id="submit-msg" class="send-btn">Send</button>
+            </div>
+            <p id="feedback" style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;"></p>
+        </div>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
